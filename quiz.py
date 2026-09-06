@@ -42,7 +42,7 @@ def run_session(num_questions: int = 3):
     print("\n======Placement prep session======\n")
     session_results: dict[str, list[dict]] = {}
 
-    for i in rangve(num_questions):
+    for i in range(num_questions):
         topic, category = pick_next_topic()
         print(f"[Q{i + 1}] Topic: {topic} ({category})")
         q = llm.generate_question(topic, category)
@@ -53,6 +53,31 @@ def run_session(num_questions: int = 3):
         elapsed = time.time() - start
 
         grade = llm.grade_answer(q["question"], q["answer"], user_answer)
+        correct = grade["correct"]
+        print(f"{'Correct' if correct else 'Incorrect'} - {grade['feedback']}")
+        if not correct:
+            print(f"(Correct answer: {q['answer']})")
+        print(f"Time taken: {elapsed:.1f}s\n")
+
+        memory.log_session(topic, q["question"], user_answer, correct, elapsed)
+        session_results.setdefault(topic, []).append(
+            {"correct": correct, "time_taken_seconds": round(elapsed, 1)}
+        )
+
+    print("---Updating your progress map---")
+    for topic, results in session_results.items():
+        update = llm.extract_topic_update(topic, results)
+        memory.update_topic_status(topic, update["status"], update["note"])
+        print(f"{topic}: {update['status']} - {update['note']}")
+
+    print("\n==== Session complete ====")
+    print("Run again anytime it'll remember exactly where you left off.\n")
+
+
+if __name__ == "__main__":
+    memory.init_db()
+    memory.seed_topics(INITIAL_TOPICS)
+    run_session
         
 
 
