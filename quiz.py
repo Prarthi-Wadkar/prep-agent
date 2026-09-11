@@ -77,7 +77,7 @@ def run_session(num_questions: int = 3):
 if __name__ == "__main__":
     memory.init_db()
     memory.seed_topics(INITIAL_TOPICS)
-    run_session
+    run_session()
         
 
 

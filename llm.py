@@ -1,20 +1,3 @@
-"""
-llm.py — all Groq calls live here, isolated from the memory and quiz logic.
-
-Three distinct calls, each doing one job (don't collapse these into one
-mega-prompt — keeping them separate is what makes the pipeline debuggable
-and is a point worth making in an interview):
-  1. generate_question — writes a fresh question for a given topic
-  2. grade_answer       — judges correctness (LLM-as-judge, so it can
-                           handle "42" vs "42.0" vs "the answer is 42")
-  3. extract_topic_update — the actual "memory write" step: turns a
-                           batch of results into a status + reason
-
-Requires GROQ_API_KEY in your environment. Get a free key at
-https://console.groq.com/keys — the free tier is generous enough for
-this whole project.
-"""
-
 import json
 import os
 
@@ -23,7 +6,7 @@ from groq import Groq
 
 load_dotenv()  # reads GROQ_API_KEY from a local .env file if present
 
-MODEL = "llama-3.3-70b-versatile"
+MODEL = "openai/gpt-oss-120b"
 
 _client = None
 
